@@ -23,30 +23,30 @@ gTwo::gTwo(QLabel*result,QLabel*score,QLabel*best,QLabel*label1,QLabel*label2,QL
     this->label[4][3]=label15;
     this->label[4][4]=label16;
     block_palette.setColor(QPalette::Active, static_cast<QPalette::ColorRole>(10), QColor(0,220,220));
-    result_palette.setColor(QPalette::Active, static_cast<QPalette::ColorRole>(10), QColor(85,250,0));
-    Best=0;
-    begin();
+    result_palette.setColor(QPalette::Active, static_cast<QPalette::ColorRole>(10), QColor(85,250,0));//設置顏色
+    Best=0;//最高分為0
+    begin();//遊戲開始
 }
 void gTwo::begin()
 {
-    Score=0;
-    max=4;
-    IsStop=false;
-    label[0][0]->setAutoFillBackground(false);
+    Score=0;//分數歸零
+    max=2;//圖上最大值為2
+    IsStop=false;//結束判斷為是
+    label[0][0]->setAutoFillBackground(false);//result背景色去掉
     memset(empt, '\0', sizeof(empt));
-    label[0][0]->setText(empt);
-    label[0][1]->setText("0");
-    memset(save, 0, sizeof(save));
+    label[0][0]->setText(empt);//清空result
+    label[0][1]->setText("0");//將分數label變0
+    memset(save, 0, sizeof(save));//陣列清空
     for(int i=1; i<5; i++)
         for(int j=1; j<5; j++)
         {
             label[i][j]->setAutoFillBackground(true);
             label[i][j]->setPalette(block_palette);
             memset(empt, '\0', sizeof(empt));
-            label[i][j]->setText(empt);
+            label[i][j]->setText(empt);//清空方塊
         }
     sprintf(str, "%d", 2);
-    int ran1, ran2;
+    int ran1, ran2;//隨機取出兩個方塊
     ran1=rand()%16;
     do
     {
@@ -55,13 +55,13 @@ void gTwo::begin()
     while(ran2==ran1);
     label[(ran1/4)+1][ran1%4+1]->setText(str);
     save[(ran1/4)+1][ran1%4+1]=2;
-    label[(ran2/4)+1][ran2%4+1]->setText(str);
+    label[(ran2/4)+1][ran2%4+1]->setText(str);//丟入字串2
     save[(ran2/4)+1][ran2%4+1]=2;
     return;
 }
 void gTwo::run_Up()
 {
-    if(!IsUp())
+    if(!IsUp())//檢查是否可以向上移動
         return;
     memset(flag, 0, sizeof(flag));
     for(int i=1; i<5; i++)
@@ -100,7 +100,7 @@ void gTwo::run_Up()
                 }
             }
         }
-    create_new();
+    create_new();//產生新數字
     return;
 }
 void gTwo::run_Down()
@@ -237,22 +237,22 @@ void gTwo::run_Right()
 }
 void gTwo::create_new()
 {
-    Score+=10;
+    Score+=10;//成功移動加十分
     int fill=0;
     for(int i=1; i<5; i++)
         for(int j=1; j<5; j++)
             if(save[i][j]!=0)
                 fill++;
     if(fill==16)
-        return;
+        return;//畫面滿了即不產生新數字
     int ran_x, ran_y, ran_num;
     do
     {
         ran_x=rand()%4+1;
         ran_y=rand()%4+1;
     }
-    while(save[ran_x][ran_y]!=0);
-    ran_num=(rand()%2+1)*2;
+    while(save[ran_x][ran_y]!=0);//隨機跑出無數字的方塊位置
+    ran_num=(rand()%2+1)*2;//隨機跑出2或4
     sprintf(str, "%d", ran_num);
     save[ran_x][ran_y]=ran_num;
     return;
@@ -264,17 +264,17 @@ void gTwo::check()
             if(save[i][j]>max)
             {
                 max=save[i][j];
-                Score*=2;
+                Score*=2;//圖上最大數字增加時,分數乘2
             }
     sprintf(str, "%d", Score);
-    label[0][1]->setText(str);
-    if(Score>Best)
+    label[0][1]->setText(str);//改變score
+    if(Score>Best)//改變高分
     {
         Best=Score;
         sprintf(str, "%d", Best);
         label[1][0]->setText(str);
     }
-    for(int i=1; i<5; i++)
+    for(int i=1; i<5; i++)//改變每個方塊的值
         for(int j=1; j<5; j++)
         {
             if(save[i][j]==0)
@@ -288,21 +288,21 @@ void gTwo::check()
                 label[i][j]->setText(str);
             }
         }
-    for(int i=1; i<5; i++)
+    for(int i=1; i<5; i++)//勝利判斷
         for(int j=1; j<5; j++)
-            if(save[i][j]==2048)
+            if(save[i][j]==2048)//是否有2048
             {
                 label[0][0]->setAutoFillBackground(true);
                 label[0][0]->setPalette(result_palette);
                 label[0][0]->setText("WINNING");
-                IsStop=true;
+                IsStop=true;//停止遊戲為是
                 return;
             }
-    for(int i=1; i<5; i++)
+    for(int i=1; i<5; i++)//失敗檢查-1
         for(int j=1; j<5; j++)
             if(save[i][j]==0)
                 return;
-    for(int i=1; i<5; i++)
+    for(int i=1; i<5; i++)//失敗檢查-2
         for(int j=1; j<5; j++)
         {
             if(i-1!=0&&save[i][j]==save[i-1][j])
@@ -316,8 +316,8 @@ void gTwo::check()
         }
     label[0][0]->setAutoFillBackground(true);
     label[0][0]->setPalette(result_palette);
-    label[0][0]->setText("GameOver");
-    IsStop=true;
+    label[0][0]->setText("GameOver");//上述檢查皆非即為Gameover
+    IsStop=true;//停止遊戲為是
     return;
 }
 bool gTwo::IsUp()
